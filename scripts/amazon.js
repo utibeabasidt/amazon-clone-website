@@ -34,8 +34,8 @@ for (let i = 0; i < products.name.length; i++) {
       <div class="product-price">$${(price / 100).toFixed(2)}</div>
 
       <div class="product-quantity-container">
-        <select>
-          <option selected value="1">1</option>
+        <select id="js-select">
+          <option value="1" selected>1</option>
           <option value="2">2</option>
           <option value="3">3</option>
           <option value="4">4</option>
@@ -50,18 +50,49 @@ for (let i = 0; i < products.name.length; i++) {
 
       <div class="product-spacer"></div>
 
-      <div class="added-to-cart">
+      <div class="added-to-cart js-added-to-cart-msg">
         <img src="images/icons/checkmark.png" />
         Added
       </div>
 
-      <button class="add-to-cart-button button-primary">Add to Cart</button>
+      <button class="add-to-cart-button button-primary js-add-to-cart-btn">Add to Cart</button>
     </div>
   `
   // adding each product html to the products html
   allProductsCode += eachProductCode
+  
 }
 
 // displaying it in the web page
 document.querySelector('.js-products-grid').innerHTML = allProductsCode
 console.log(allProductsCode)
+
+// storing cart quantity
+let cartQuantity = 0;
+
+// invoking all the add to cart elements to make it interactive (using querySelectorAll because we have to loop through all the buttons, text and options to make them dynamic to their index)
+let addBtns = document.querySelectorAll('.js-add-to-cart-btn');
+let addedMsg = document.querySelectorAll('.js-added-to-cart-msg')
+addBtns.forEach((addBtn, i) => {
+  addBtn.addEventListener('click', ()=>{
+    // Display message for two seconds
+    addedMsg[i].classList.add('added-to-cart-on')
+    setTimeout (()=>{
+      addedMsg[i].classList.remove('added-to-cart-on')
+    }, 1500)
+
+    // getting the value of the option for each index
+    let selectElement = document.querySelectorAll('#js-select')
+    let option = parseInt(selectElement[i].value) // changing the option of a specific index string to integer
+    cartQuantity += option
+
+    // updating the cart
+    cart.productName.push(products.name[i])
+    cart.quantity.push(cartQuantity)
+
+    console.log(cart)
+
+    // updating the page
+    document.querySelector('.js-cart-quantity').innerText = cartQuantity
+  })
+})

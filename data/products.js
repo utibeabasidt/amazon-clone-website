@@ -1,4 +1,4 @@
-const products = {
+let products = {
   image: [
     "images/products/athletic-cotton-socks-6-pairs.jpg",
     "images/products/intermediate-composite-basketball.jpg",
@@ -109,5 +109,3 @@ const products = {
     5799, 2400
   ]
 };
-
-console.log('hello')

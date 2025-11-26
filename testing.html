@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <select class="js-select">
+      <option value="one">one</option>
+      <option value="two" selected>two</option>
+    </select>
+    <button class="js-btn">Chose</button>
+
+    <script>
+      let btn = document.querySelector(".js-btn");
+      btn.addEventListener("click", () => {
+        let selectElement = document.querySelector(".js-select");
+        let option = selectElement.value;
+        alert(option);
+      });
+    </script>
+  </body>
+</html>
