@@ -4,6 +4,7 @@ let allProductsCode = ``; // to save all the html from each products
 
 // looping through to get each of the information
 for (let i = 0; i < products.name.length; i++) {
+  let id = products.id[i]
   let image = products.image[i];
   let name = products.name[i];
   let starsRating = products.ratings.stars[i];
@@ -55,17 +56,15 @@ for (let i = 0; i < products.name.length; i++) {
         Added
       </div>
 
-      <button class="add-to-cart-button button-primary js-add-to-cart-btn">Add to Cart</button>
+      <button class="add-to-cart-button button-primary js-add-to-cart-btn" data-product-id="${id}">Add to Cart</button>
     </div>
   `
   // adding each product html to the products html
   allProductsCode += eachProductCode
-  
 }
 
 // displaying it in the web page
 document.querySelector('.js-products-grid').innerHTML = allProductsCode
-console.log(allProductsCode)
 
 // storing cart quantity
 let cartQuantity = 0;
@@ -74,7 +73,12 @@ let cartQuantity = 0;
 let addBtns = document.querySelectorAll('.js-add-to-cart-btn');
 let addedMsg = document.querySelectorAll('.js-added-to-cart-msg')
 addBtns.forEach((addBtn, i) => {
+  
   addBtn.addEventListener('click', ()=>{
+    // getting the product id and name from each button clicked
+    let eachProductId = addBtn.dataset.productId
+    let eachProductName = products.name[i] 
+
     // Display message for two seconds
     addedMsg[i].classList.add('added-to-cart-on')
     setTimeout (()=>{
@@ -86,9 +90,26 @@ addBtns.forEach((addBtn, i) => {
     let option = parseInt(selectElement[i].value) // changing the option of a specific index string to integer
     cartQuantity += option
 
-    // updating the cart
-    cart.productName.push(products.name[i])
-    cart.quantity.push(cartQuantity)
+    // Check if this product is already in the cart
+    let productIdAlreadyInCart = false;
+    let positionInCart = 0;
+    cart.productIds.forEach((productId, itemIndex)=> {
+      if (eachProductId === productId) {
+        productIdAlreadyInCart = true;
+        positionInCart = itemIndex; // take note of the index
+      }
+    })
+
+    // Add or update the product in the cart
+    if (productIdAlreadyInCart) {
+      // Just add more quantity to the existing product
+      cart.quantity[positionInCart] += option;
+    } else {
+      // Add as a new item in the cart
+      cart.productIds.push(eachProductId);
+      cart.productName.push(eachProductName)
+      cart.quantity.push(option);
+    }
 
     console.log(cart)
 
