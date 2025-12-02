@@ -1,4 +1,6 @@
-let products = {
+/// THIS SECTION HELPS IN COLLECT INFORMATION ABOUT THE PRODUCTS AND DISPLAYING IT ON THE PAGE
+
+export let products = {
   id: [
     "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
     "15b6fc6f-327a-4ec4-896f-486349e85a3d",
@@ -197,3 +199,69 @@ let products = {
     ["sweaters","hoodies","apparel","mens"]
   ]
 };
+
+// function to loop through to get each of the information and display it one the page
+export function displayProductsOnPage () {
+  let allProductsCode = ``; // to save all the html from each products
+  for (let i = 0; i < products.name.length; i++) {
+    let id = products.id[i]
+    let image = products.image[i];
+    let name = products.name[i];
+    let starsRating = products.ratings.stars[i];
+    let countRating = products.ratings.count[i];
+    let price = products.priceCents[i];
+    //generating html code for each product information
+    let eachProductCode = `
+      <div class="product-container">
+        <div class="product-image-container">
+          <img
+            class="product-image"
+            src="${image}"
+          />
+        </div>
+
+        <div class="product-name limit-text-to-2-lines">
+          ${name}
+        </div>
+
+        <div class="product-rating-container">
+          <img
+            class="product-rating-stars"
+            src="images/ratings/rating-${starsRating * 10}.png"
+          />
+          <div class="product-rating-count link-primary">${countRating}</div>
+        </div>
+
+        <div class="product-price">$${(price / 100).toFixed(2)}</div>
+
+        <div class="product-quantity-container">
+          <select class="js-select-for-${id}">
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+
+        <div class="product-spacer"></div>
+
+        <div class="added-to-cart js-added-to-cart-msg">
+          <img src="images/icons/checkmark.png" />
+          Added
+        </div>
+
+        <button class="add-to-cart-button button-primary js-add-to-cart-btn" data-product-id="${id}">Add to Cart</button>
+      </div>
+    `
+    // adding each product html to the products html
+    allProductsCode += eachProductCode
+  }
+  // displaying it in the web page
+  document.querySelector('.js-products-grid').innerHTML = allProductsCode
+}

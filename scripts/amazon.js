@@ -1,119 +1,64 @@
-// GENERATING THE PRODUCTS PAGE WITH JAVASCRIPT
+/// THIS SECTION HELPS US IMPORT THE CART AND PRODUCTS SECTION, HELPS US HANDLE CART MESSAGE FUNCTIONALITY, AS WELL AS HELP US ADD AN EVENT TO THE ADD BUTTON
 
-let allProductsCode = ``; // to save all the html from each products
+// Loading the Cart first before any other thing
+import { cart, addToCart, getCartQuantity } from "../data/cart.js";
 
-// looping through to get each of the information
-for (let i = 0; i < products.name.length; i++) {
-  let id = products.id[i]
-  let image = products.image[i];
-  let name = products.name[i];
-  let starsRating = products.ratings.stars[i];
-  let countRating = products.ratings.count[i];
-  let price = products.priceCents[i];
-  //generating html code for each product information
-  let eachProductCode = `
-    <div class="product-container">
-      <div class="product-image-container">
-        <img
-          class="product-image"
-          src="${image}"
-        />
-      </div>
+// Fetching the product data first before displaying it on the screen
+import { products, displayProductsOnPage } from "../data/products.js";
 
-      <div class="product-name limit-text-to-2-lines">
-        ${name}
-      </div>
-
-      <div class="product-rating-container">
-        <img
-          class="product-rating-stars"
-          src="images/ratings/rating-${starsRating * 10}.png"
-        />
-        <div class="product-rating-count link-primary">${countRating}</div>
-      </div>
-
-      <div class="product-price">$${(price / 100).toFixed(2)}</div>
-
-      <div class="product-quantity-container">
-        <select id="js-select">
-          <option value="1" selected>1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-      </div>
-
-      <div class="product-spacer"></div>
-
-      <div class="added-to-cart js-added-to-cart-msg">
-        <img src="images/icons/checkmark.png" />
-        Added
-      </div>
-
-      <button class="add-to-cart-button button-primary js-add-to-cart-btn" data-product-id="${id}">Add to Cart</button>
-    </div>
-  `
-  // adding each product html to the products html
-  allProductsCode += eachProductCode
+// function to check if the timeout is still working even when another button is clicked again. if it is, cancel the former timeout and use the current
+let isTimeoutWorking = false
+let timeoutVariable;
+function checkingTimeout (message) {
+  if (!isTimeoutWorking) {
+    // clear the timeout and start again
+    clearTimeout(timeoutVariable);
+    timeoutVariable = setTimeout (()=>{
+      message.classList.remove('added-to-cart-on')
+    }, 2000)
+    isTimeoutWorking = true
+  } else {
+    // clear the timeout and start again
+    clearTimeout(timeoutVariable)
+    timeoutVariable = setTimeout (()=>{
+      message.classList.remove('added-to-cart-on')
+    }, 2000)
+    isTimeoutWorking = false
+  }
 }
 
-// displaying it in the web page
-document.querySelector('.js-products-grid').innerHTML = allProductsCode
+// display the products on the page before anything else
+displayProductsOnPage();
 
-// storing cart quantity
-let cartQuantity = 0;
+// display the cart quantity on the page before anything else
+getCartQuantity();
 
 // invoking all the add to cart elements to make it interactive (using querySelectorAll because we have to loop through all the buttons, text and options to make them dynamic to their index)
 let addBtns = document.querySelectorAll('.js-add-to-cart-btn');
 let addedMsg = document.querySelectorAll('.js-added-to-cart-msg')
-addBtns.forEach((addBtn, i) => {
-  
+
+// looping though each buttons to add functionality
+addBtns.forEach((addBtn, i) => {  
   addBtn.addEventListener('click', ()=>{
     // getting the product id and name from each button clicked
     let eachProductId = addBtn.dataset.productId
     let eachProductName = products.name[i] 
+    let eachProductPrice = products.priceCents[i] / 100
 
-    // Display message for two seconds
+    // Display message and animation
     addedMsg[i].classList.add('added-to-cart-on')
-    setTimeout (()=>{
-      addedMsg[i].classList.remove('added-to-cart-on')
-    }, 1500)
+    checkingTimeout(addedMsg[i])
 
-    // getting the value of the option for each index
-    let selectElement = document.querySelectorAll('#js-select')
-    let option = parseInt(selectElement[i].value) // changing the option of a specific index string to integer
-    cartQuantity += option
+    // getting the value of the option for each product id index
+    let selectElement = document.querySelector(`.js-select-for-${products.id[i]}`)
+    let option = parseInt(selectElement.value) // changing the option of a specific index string to integer
 
-    // Check if this product is already in the cart
-    let productIdAlreadyInCart = false;
-    let positionInCart = 0;
-    cart.productIds.forEach((productId, itemIndex)=> {
-      if (eachProductId === productId) {
-        productIdAlreadyInCart = true;
-        positionInCart = itemIndex; // take note of the index
-      }
-    })
+    // adding product to cart
+    addToCart(eachProductId, eachProductName, eachProductPrice, option)
 
-    // Add or update the product in the cart
-    if (productIdAlreadyInCart) {
-      // Just add more quantity to the existing product
-      cart.quantity[positionInCart] += option;
-    } else {
-      // Add as a new item in the cart
-      cart.productIds.push(eachProductId);
-      cart.productName.push(eachProductName)
-      cart.quantity.push(option);
-    }
-
+    console.log(eachProductPrice)
     console.log(cart)
-
-    // updating the page
-    document.querySelector('.js-cart-quantity').innerText = cartQuantity
   })
 })
+
+
