@@ -1,7 +1,8 @@
 /// THIS SECTION HELPS US WITH ADDING AND UPDATING THE CART
 
-export let cart = {
+export let cart = JSON.parse(localStorage.getItem('cart')) || {
   productIds: [],
+  productImage: [],
   productName: [],
   productPrice: [],
   quantity: [],
@@ -9,7 +10,7 @@ export let cart = {
 }
 
 // function add a product to cart, but has to check some conditions
-export function addToCart(eachProductId, eachProductName, eachProductPrice, option) {
+export function addToCart(eachProductImage, eachProductId, eachProductName, eachProductPrice, option) {
   // we check if the product id already exist in the cart (if it is, just update the cart, else, add a new product to the cart)
   let productIdAlreadyInCart = false;
   let positionInCart = 0;
@@ -20,7 +21,9 @@ export function addToCart(eachProductId, eachProductName, eachProductPrice, opti
     }
   })
 
-  let totalPrice = eachProductPrice * option // getting the total price
+  // getting the total price
+  let totalPrice = (eachProductPrice * option) * 100 
+  totalPrice = totalPrice/100
 
   // Add or update the product in the cart
   if (productIdAlreadyInCart) {
@@ -30,11 +33,16 @@ export function addToCart(eachProductId, eachProductName, eachProductPrice, opti
   } else {
     // Add as a new item in the cart
     cart.productIds.push(eachProductId);
+    cart.productImage.push(eachProductImage)
     cart.productName.push(eachProductName)
     cart.productPrice.push(eachProductPrice)
     cart.quantity.push(option);
     cart.totalPrice.push(totalPrice);
   }
+
+  // add to localStorage
+  let jsonString = JSON.stringify(cart);
+  localStorage.setItem('cart', jsonString)
 
   getCartQuantity(); // get cart quantity
 }
@@ -46,5 +54,6 @@ export function getCartQuantity () {
     cartQuantity += eachQuantity
   })
 
+  console.log(cart)
   document.querySelector('.js-cart-quantity').innerText = cartQuantity // updating the page with the cart quantity
 }

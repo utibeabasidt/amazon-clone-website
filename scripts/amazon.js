@@ -1,30 +1,23 @@
 /// THIS SECTION HELPS US IMPORT THE CART AND PRODUCTS SECTION, HELPS US HANDLE CART MESSAGE FUNCTIONALITY, AS WELL AS HELP US ADD AN EVENT TO THE ADD BUTTON
 
 // Loading the Cart first before any other thing
-import { cart, addToCart, getCartQuantity } from "../data/cart.js";
+import { addToCart, getCartQuantity } from "../data/cart.js";
 
 // Fetching the product data first before displaying it on the screen
 import { products, displayProductsOnPage } from "../data/products.js";
 
 // function to check if the timeout is still working even when another button is clicked again. if it is, cancel the former timeout and use the current
-let isTimeoutWorking = false
+let isTimeoutWorking = true
 let timeoutVariable;
 function checkingTimeout (message) {
-  if (!isTimeoutWorking) {
+  if (isTimeoutWorking) {
     // clear the timeout and start again
     clearTimeout(timeoutVariable);
+    // after two minutes, take out the message
     timeoutVariable = setTimeout (()=>{
       message.classList.remove('added-to-cart-on')
     }, 2000)
-    isTimeoutWorking = true
-  } else {
-    // clear the timeout and start again
-    clearTimeout(timeoutVariable)
-    timeoutVariable = setTimeout (()=>{
-      message.classList.remove('added-to-cart-on')
-    }, 2000)
-    isTimeoutWorking = false
-  }
+  } 
 }
 
 // display the products on the page before anything else
@@ -40,8 +33,9 @@ let addedMsg = document.querySelectorAll('.js-added-to-cart-msg')
 // looping though each buttons to add functionality
 addBtns.forEach((addBtn, i) => {  
   addBtn.addEventListener('click', ()=>{
-    // getting the product id and name from each button clicked
+    // getting the product id, image, name and price from each button clicked
     let eachProductId = addBtn.dataset.productId
+    let eachProductImage = products.image[i]
     let eachProductName = products.name[i] 
     let eachProductPrice = products.priceCents[i] / 100
 
@@ -54,10 +48,8 @@ addBtns.forEach((addBtn, i) => {
     let option = parseInt(selectElement.value) // changing the option of a specific index string to integer
 
     // adding product to cart
-    addToCart(eachProductId, eachProductName, eachProductPrice, option)
+    addToCart(eachProductImage, eachProductId, eachProductName, eachProductPrice, option)
 
-    console.log(eachProductPrice)
-    console.log(cart)
   })
 })
 
