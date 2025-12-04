@@ -22,8 +22,8 @@ export function addToCart(eachProductImage, eachProductId, eachProductName, each
   })
 
   // getting the total price
-  let totalPrice = (eachProductPrice * option) * 100 
-  totalPrice = totalPrice/100
+  let totalPrice = (eachProductPrice * option) * 100;
+  totalPrice = totalPrice/100;
 
   // Add or update the product in the cart
   if (productIdAlreadyInCart) {
@@ -56,4 +56,14 @@ export function getCartQuantity () {
 
   console.log(cart)
   document.querySelector('.js-cart-quantity').innerText = cartQuantity // updating the page with the cart quantity
+}
+
+// function to add interactivity to every delete button
+export function deleteProduct (i) {
+  cart.productIds.splice(i, 1);
+  cart.productImage.splice(i, 1);
+  cart.productName.splice(i, 1);
+  cart.productPrice.splice(i, 1);
+  cart.quantity.splice(i, 1);
+  cart.totalPrice.splice(i, 1);
 }
