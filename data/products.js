@@ -264,4 +264,5 @@ export function displayProductsOnPage () {
   }
   // displaying it in the web page
   document.querySelector('.js-products-grid').innerHTML = allProductsCode
+  
 }

@@ -1,9 +1,12 @@
-import { cart } from '../data/cart.js';
+import { addToStorage, cart } from '../data/cart.js';
 import { deleteProduct } from '../data/cart.js';
+import { getCartQuantity } from '../data/cart.js';
 
 let shippingFeeCents = 0; // ← ALWAYS work in CENTS
 
 export function updateCheckout() {
+  document.querySelector('.js-cart-quantity-link').innerText = `${getCartQuantity()} Items`
+
   let allProductOrderCode = '';
   let totalQuantity = 0;
   let generalTotalPriceCents = 0; // ← total in CENTS
@@ -33,7 +36,9 @@ export function updateCheckout() {
             <div class="product-price">$${(productPriceCents/100).toFixed(2)}</div>
             <div class="product-quantity">
               <span>Quantity: <span class="quantity-label">${quantity}</span></span>
-              <span class="update-quantity-link link-primary">Update</span>
+              <span class="update-quantity-link link-primary js-update-btn">Update</span>
+              <input type="text" class="quantity-input js-quantity-input">
+              <span class="save-quantity-link link-primary js-save-btn">Save</span>
               <span class="delete-quantity-link link-primary js-delete-button" data-index="${i}">
                 Delete
               </span>
@@ -94,6 +99,7 @@ export function updateCheckout() {
   // === 5. RE-ATTACH ALL LISTENERS (MOST IMPORTANT!) ===
   deleteButtonsEvent();
   deliveryRadiosEvent();
+  updateQuantity()
 }
 
 // === DELETE BUTTONS ===
@@ -102,7 +108,6 @@ function deleteButtonsEvent() {
     btn.addEventListener('click', () => {
       const index = Number(btn.dataset.index);
       deleteProduct(index);
-      localStorage.setItem('cart', JSON.stringify(cart));
       updateCheckout(); // ← re-renders + re-attaches listeners
     });
   });
@@ -118,11 +123,84 @@ function deliveryRadiosEvent() {
         updateCheckout(); // Re-render with new fee + correct radio stays checked
       }
     });
-    
+
     // Set correct checked state based on current shippingFeeCents
     if (Number(radio.dataset.cost) === shippingFeeCents) {
       radio.checked = true;
     }
+  });
+}
+
+// MAKING THE UPDATE BUTTON INTERACTIVE
+function updateQuantity() {
+  document.querySelectorAll('.js-update-btn').forEach((updateBtn, i) => {
+    // Get the elements that belong to this product (same index)
+    const quantityLabel = document.querySelectorAll('.quantity-label')[i];
+    const quantityInput = document.querySelectorAll('.js-quantity-input')[i];
+    const saveElement = document.querySelectorAll('.js-save-btn')[i];
+
+    updateBtn.addEventListener('click', () => {
+      // Hide the update button and old quantity
+      updateBtn.remove();
+      quantityLabel.remove();
+
+      // Show input field and save button
+      quantityInput.classList.add('quantity-input-on');
+      saveElement.classList.add('save-quantity-link-on');
+
+      // Focus the input
+      quantityInput.focus();
+      quantityInput.select();
+
+      // === MAIN SAVE & VALIDATION FUNCTION ===
+      function addUpdates() {
+        let inputValue = quantityInput.value.trim();
+
+        // Empty input
+        if (inputValue === '') {
+          alert("Please enter a quantity.");
+          quantityInput.focus();
+          return;
+        }
+        // Not a number
+        if (isNaN(inputValue) || inputValue.includes('.')) {
+          alert("Please enter a valid whole number.");
+          quantityInput.focus();
+          return;
+        }
+        const newQuantity = Number(inputValue);
+        // Less than 1
+        if (newQuantity < 1) {
+          alert("Quantity cannot be less than 1.");
+          quantityInput.focus();
+          return;
+        }
+        // Greater than 1000
+        if (newQuantity > 1000) {
+          alert("Quantity cannot be greater than 1000.");
+          quantityInput.focus();
+          return;
+        }
+
+        // Save the quantity if it passes all tests
+        cart.quantity[i] = newQuantity;
+        cart.totalPrice[i] = newQuantity * cart.productPrice[i];
+        addToStorage(); // Save to localStorage
+        updateCheckout(); // Re-render everything
+      }
+
+      // SAVE ON CLICK
+      saveElement.addEventListener('click', () => {
+        addUpdates();
+      });
+
+      // SAVE ON ENTER KEY
+      quantityInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          addUpdates();
+        }
+      });
+    });
   });
 }
 

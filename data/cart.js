@@ -9,6 +9,13 @@ export let cart = JSON.parse(localStorage.getItem('cart')) || {
   totalPrice: []
 }
 
+// function to add to localStorage
+export function addToStorage() {
+  let jsonString = JSON.stringify(cart);
+  localStorage.setItem('cart', jsonString)
+}
+  
+
 // function add a product to cart, but has to check some conditions
 export function addToCart(eachProductImage, eachProductId, eachProductName, eachProductPrice, option) {
   // we check if the product id already exist in the cart (if it is, just update the cart, else, add a new product to the cart)
@@ -40,11 +47,10 @@ export function addToCart(eachProductImage, eachProductId, eachProductName, each
     cart.totalPrice.push(totalPrice);
   }
 
-  // add to localStorage
-  let jsonString = JSON.stringify(cart);
-  localStorage.setItem('cart', jsonString)
+  // adding to storage
+  addToStorage()
 
-  getCartQuantity(); // get cart quantity
+  document.querySelector('.js-cart-quantity').innerText = getCartQuantity() // updating the page with the cart quantity
 }
 
 // function for getting the total quantity from the cart (best if it is in local storage)
@@ -53,9 +59,7 @@ export function getCartQuantity () {
   cart.quantity.forEach((eachQuantity)=>{
     cartQuantity += eachQuantity
   })
-
-  console.log(cart)
-  document.querySelector('.js-cart-quantity').innerText = cartQuantity // updating the page with the cart quantity
+  return cartQuantity;
 }
 
 // function to add interactivity to every delete button
@@ -66,4 +70,5 @@ export function deleteProduct (i) {
   cart.productPrice.splice(i, 1);
   cart.quantity.splice(i, 1);
   cart.totalPrice.splice(i, 1);
+  addToStorage()
 }

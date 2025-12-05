@@ -24,7 +24,7 @@ function checkingTimeout (message) {
 displayProductsOnPage();
 
 // display the cart quantity on the page before anything else
-getCartQuantity();
+document.querySelector('.js-cart-quantity').innerText = getCartQuantity();
 
 // invoking all the add to cart elements to make it interactive (using querySelectorAll because we have to loop through all the buttons, text and options to make them dynamic to their index)
 let addBtns = document.querySelectorAll('.js-add-to-cart-btn');
@@ -49,7 +49,6 @@ addBtns.forEach((addBtn, i) => {
 
     // adding product to cart
     addToCart(eachProductImage, eachProductId, eachProductName, eachProductPrice, option)
-
   })
 })
 
